@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تسجيل الدخول - eStore</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      
+      .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 400px;
+        width: 100%;
+        animation: slideInUp 0.8s ease-out;
+      }
+      
+      .login-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .login-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      .login-header h2 {
+        margin: 0;
+        font-size: 2.2rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+      }
+      
+      .login-header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+      }
+      
+      .login-body {
+        padding: 40px;
+      }
+      
+      .form-floating {
+        margin-bottom: 20px;
+        position: relative;
+      }
+      
+      .form-floating input,
+      .form-floating select {
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+      }
+      
+      .form-floating input:focus,
+      .form-floating select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+        transform: translateY(-2px);
+      }
+      
+      .form-floating label {
+        color: #6c757d;
+        font-weight: 500;
+        padding: 0 20px;
+      }
+      
+      .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        z-index: 10;
+      }
+      
+      .password-toggle:hover {
+        color: #667eea;
+      }
+      
+      .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+      
+      .btn-login:hover::before {
+        left: 100%;
+      }
+      
+      .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+      
+      .btn-login:active {
+        transform: translateY(-1px);
+      }
+      
+      .register-link {
+        text-align: center;
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid #e9ecef;
+      }
+      
+      .register-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+      
+      .register-link a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+      
+      .validation-message {
+        font-size: 14px;
+        margin-top: 5px;
+        display: none;
+      }
+      
+      .validation-message.error {
+        color: #dc3545;
+        display: block;
+      }
+      
+      .form-floating.error input {
+        border-color: #dc3545;
+        background: #fff5f5;
+      }
+      
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+      }
+      
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+      
+      .shake {
+        animation: shake 0.5s ease-in-out;
+      }
+      
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+      }
+      
+      .fade-in.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      @media (max-width: 576px) {
+        .login-card {
+          margin: 10px;
+        }
+        
+        .login-body {
+          padding: 30px 20px;
+        }
+        
+        .login-header {
+          padding: 25px 20px;
+        }
+        
+        .login-header h2 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <h2><i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول</h2>
+          <p>مرحباً بك في متجرنا الإلكتروني</p>
+        </div>
+        
+        <div class="login-body">
+          <form id="loginForm" novalidate>
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                placeholder="اسم المستخدم"
+                required
+              />
+              <label for="username">اسم المستخدم</label>
+              <div class="validation-message" id="usernameMessage"></div>
+            </div>
+            
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="كلمة المرور"
+                required
+              />
+              <label for="password">كلمة المرور</label>
+              <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <div class="validation-message" id="passwordMessage"></div>
+            </div>
+            
+            <button type="submit" class="btn btn-login" id="loginBtn">
+              <i class="fas fa-sign-in-alt me-2"></i>
+              دخول
+            </button>
+          </form>
+          
+          <div class="register-link">
+            <p>ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="../js/login.js"></script>
+  </body>
+</html>
