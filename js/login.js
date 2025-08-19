@@ -3,14 +3,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // Check if user is already logged in
   const user = JSON.parse(localStorage.getItem("user"));
   if (user) {
-    // Redirect to products page if already logged in
-    window.location.href = "products.html";
+    // Redirect based on role
+    if (user.role === "admin") {
+      window.location.href = "dashboard.html";
+    } else {
+      window.location.href = "products.html";
+    }
     return;
   }
 
   // Initialize the page
   initializeLoginPage();
 });
+
 
 function initializeLoginPage() {
   const form = document.getElementById("loginForm");
@@ -160,32 +165,37 @@ async function handleFormSubmit(event) {
     const user = authenticateUser(username, password);
     
     if (user) {
-      // Store user session (without password for security)
-      const sessionUser = {
-        id: user.id,
-        username: user.username,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        loginTime: new Date().toISOString()
-      };
-      
-      localStorage.setItem("user", JSON.stringify(sessionUser));
-      
-      // Show success message
-      showSuccessMessage("تم تسجيل الدخول بنجاح! جاري تحويلك...");
-      
-      // Redirect to products page after delay
-      setTimeout(() => {
-        window.location.href = "products.html";
-      }, 1500);
-      
+  // Store user session (without password for security)
+  const sessionUser = {
+    id: user.id,
+    username: user.username,
+    fullName: user.fullName,
+    email: user.email,
+    role: user.role,
+    loginTime: new Date().toISOString()
+  };
+  
+  localStorage.setItem("user", JSON.stringify(sessionUser));
+  
+  // Show success message
+  showSuccessMessage("تم تسجيل الدخول بنجاح! جاري تحويلك...");
+  
+  // Redirect based on role after delay
+  setTimeout(() => {
+    if (sessionUser.role === "admin") {
+      window.location.href = "dashboard.html";
     } else {
-      // Show error message
-      showFormError("اسم المستخدم أو كلمة المرور غير صحيحة");
-      shakeElement(document.getElementById("username"));
-      shakeElement(document.getElementById("password"));
+      window.location.href = "products.html";
     }
+  }, 1500);
+  
+} else {
+  // Show error message
+  showFormError("اسم المستخدم أو كلمة المرور غير صحيحة");
+  shakeElement(document.getElementById("username"));
+  shakeElement(document.getElementById("password"));
+}
+
     
   } catch (error) {
     showFormError("حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");

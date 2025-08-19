@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة المستخدمين</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+  <h2 class="mb-4 text-center">إدارة المستخدمين (الإدمنز)</h2>
+
+  <!-- زرار رجوع للداشبورد -->
+  <div class="mb-3">
+    <a href="dashboard.html" class="btn btn-secondary">⬅️ رجوع للداشبورد</a>
+  </div>
+
+  <!-- فورم إضافة أدمن -->
+  <form id="addAdminForm" class="row g-3 mb-4">
+    <div class="col-md-5">
+      <input type="text" id="adminName" class="form-control" placeholder="اسم الأدمن" required>
+    </div>
+    <div class="col-md-5">
+      <input type="email" id="adminEmail" class="form-control" placeholder="الإيميل" required>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">➕ إضافة أدمن جديد</button>
+    </div>
+  </form>
+
+  <!-- جدول الإدمنز -->
+  <table class="table table-bordered table-hover bg-white">
+    <thead class="table-dark">
+      <tr>
+        <th>الاسم</th>
+        <th>الإيميل</th>
+        <th>الإجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="adminsTableBody"></tbody>
+  </table>
+</div>
+
+<script>
+  // استرجاع الإدمنز من localStorage
+  function getAdmins() {
+    return JSON.parse(localStorage.getItem("admins")) || [
+      { name: "Default Admin", email: "admin@example.com" }
+    ];
+  }
+
+  // حفظ الإدمنز في localStorage
+  function saveAdmins(admins) {
+    localStorage.setItem("admins", JSON.stringify(admins));
+  }
+
+  // عرض الإدمنز في الجدول
+  function renderAdmins() {
+    const admins = getAdmins();
+    const tbody = document.getElementById("adminsTableBody");
+    tbody.innerHTML = "";
+
+    admins.forEach((admin, index) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${admin.name}</td>
+          <td>${admin.email}</td>
+          <td>
+            <button class="btn btn-sm btn-warning" onclick="editAdmin(${index})">✏️ تعديل</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${index})">🗑️ حذف</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  // إضافة أدمن جديد
+  document.getElementById("addAdminForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("adminName").value;
+    const email = document.getElementById("adminEmail").value;
+
+    const admins = getAdmins();
+    admins.push({ name, email });
+    saveAdmins(admins);
+    renderAdmins();
+
+    e.target.reset();
+  });
+
+  // تعديل بيانات الأدمن
+  function editAdmin(index) {
+    const admins = getAdmins();
+    const admin = admins[index];
+
+    const newName = prompt("ادخل الاسم الجديد:", admin.name);
+    const newEmail = prompt("ادخل الإيميل الجديد:", admin.email);
+
+    if (newName && newEmail) {
+      admins[index] = { name: newName, email: newEmail };
+      saveAdmins(admins);
+      renderAdmins();
+    }
+  }
+
+  // حذف الأدمن
+  function deleteAdmin(index) {
+    if (confirm("هل انت متأكد انك تريد حذف هذا الأدمن؟")) {
+      const admins = getAdmins();
+      admins.splice(index, 1);
+      saveAdmins(admins);
+      renderAdmins();
+    }
+  }
+
+  // أول ما الصفحة تفتح
+  renderAdmins();
+</script>
+
+</body>
+</html>

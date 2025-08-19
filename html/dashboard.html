@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة تحكم المدير - eStore</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8f9fa;
+      }
+      
+      .admin-sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        z-index: 1000;
+        overflow-y: auto;
+      }
+      
+      .admin-content {
+        min-height: 100vh;
+        margin-right: 280px;
+        background: #f8f9fa;
+      }
+      
+      .admin-header {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 1.5rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 3px solid #667eea;
+      }
+      
+      .sidebar-brand {
+        text-align: center;
+        padding: 2rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        color: white;
+      }
+      
+      .sidebar-brand h4 {
+        margin: 0;
+        font-weight: 700;
+        background: linear-gradient(45deg, #3498db, #2ecc71);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .sidebar-nav {
+        padding: 1rem 0;
+      }
+      
+      .sidebar-nav .nav-link {
+        color: #bdc3c7;
+        padding: 1.2rem 1.5rem;
+        border-radius: 0;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        margin: 0.2rem 0;
+      }
+      
+      .sidebar-nav .nav-link:hover,
+      .sidebar-nav .nav-link.active {
+        background: linear-gradient(90deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+        color: #3498db;
+        border-left-color: #3498db;
+        transform: translateX(-5px);
+      }
+      
+      .sidebar-nav .nav-link i {
+        margin-left: 15px;
+        width: 20px;
+        text-align: center;
+        font-size: 1.1rem;
+      }
+      
+      .sidebar-footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+      }
+      
+      .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+        border: none;
+        height: 100%;
+      }
+      
+      .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+      }
+      
+      .stat-card .stat-icon {
+        font-size: 3rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+      }
+      
+      .stat-card .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .stat-card .stat-label {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+      
+      .dashboard-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+      
+      .dashboard-card .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1.5rem 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      
+      .dashboard-card .card-body {
+        padding: 2rem;
+      }
+      
+      .admin-welcome {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .admin-welcome::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      .admin-welcome h3,
+      .admin-welcome p {
+        position: relative;
+        z-index: 2;
+      }
+      
+      .order-item {
+        border: 1px solid #e9ecef;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        background: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .order-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, #667eea, #764ba2);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+      }
+      
+      .order-item:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
+      }
+      
+      .order-item:hover::before {
+        transform: scaleY(1);
+      }
+      
+      .order-status {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .status-pending {
+        background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+        color: #856404;
+        box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
+      }
+      
+      .status-approved {
+        background: linear-gradient(135deg, #00cec9 0%, #00b894 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+      }
+      
+      .status-rejected {
+        background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(232, 67, 147, 0.3);
+      }
+      
+      .form-floating {
+        margin-bottom: 1.5rem;
+      }
+      
+      .form-floating input,
+      .form-floating select,
+      .form-floating textarea {
+        border: 2px solid #e1e5e9;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        font-size: 1rem;
+      }
+      
+      .form-floating input:focus,
+      .form-floating select:focus,
+      .form-floating textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+        background: white;
+        transform: translateY(-2px);
+      }
+      
+      .form-floating label {
+        color: #6c757d;
+        font-weight: 500;
+      }
+      
+      .btn-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+      }
+      
+      .btn-admin:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+      }
+      
+      .btn-admin:active {
+        transform: translateY(-1px);
+      }
+      
+      .password-display {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        font-family: 'Courier New', monospace;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+        text-align: center;
+        position: relative;
+      }
+      
+      .admin-credentials {
+        background: linear-gradient(135deg, #00cec9 0%, #00b894 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-top: 2rem;
+        display: none;
+        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.2);
+      }
+      
+      .admin-credentials.show {
+        display: block;
+        animation: slideInUp 0.6s ease;
+      }
+      
+      .credentials-item {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .copy-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        color: white;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+      
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+      }
+      
+      .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      }
+      
+      .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .table thead th {
+        border: none;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      
+      .table tbody td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-color: #f8f9fa;
+      }
+      
+      .table tbody tr:hover {
+        background: #f8f9fa;
+      }
+      
+      .badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+      }
+      
+      .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      
+      .empty-state h5 {
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+      }
+      
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      /* Mobile Responsiveness */
+      @media (max-width: 768px) {
+        .admin-sidebar {
+          position: fixed;
+          top: 0;
+          right: -280px;
+          transition: right 0.3s ease;
+          z-index: 1050;
+        }
+        
+        .admin-sidebar.show {
+          right: 0;
+        }
+        
+        .admin-content {
+          margin-right: 0;
+        }
+        
+        .admin-header {
+          padding: 1rem;
+        }
+        
+        .stat-card {
+          margin-bottom: 1rem;
+        }
+        
+        .order-item {
+          padding: 1.5rem 1rem;
+        }
+        
+        .dashboard-card .card-body {
+          padding: 1.5rem 1rem;
+        }
+      }
+      
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+      }
+      
+      @media (max-width: 768px) {
+        .mobile-overlay.show {
+          display: block;
+        }
+      }
+      
+      .loading {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      
+      .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <div class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+          <h4>
+            <i class="fas fa-crown me-2"></i>
+            لوحة المدير
+          </h4>
+          <small class="text-light opacity-75">eStore Admin Panel</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                الرئيسية
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin-orders.html" data-section="orders">
+                <i class="fas fa-shopping-cart"></i>
+                إدارة الطلبات
+                <span class="badge bg-warning ms-auto" id="pendingOrdersBadge">0</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#add-admin" data-section="add-admin">
+                <i class="fas fa-user-plus"></i>
+                إضافة مدير
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="user.html" data-section="users">
+                <i class="fas fa-users"></i>
+                إدارة المستخدمين
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="manage-products.html" data-section="settings">
+                <i class="fas fa-cog"></i>
+                إدارة المنتجات
+              </a>
+            </li>
+          </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <a href="../html/index.html" class="btn btn-outline-light btn-sm w-100 mb-2">
+            <i class="fas fa-home me-2"></i>
+            العودة للموقع
+          </a>
+          <a href="../html/logout.html" class="btn btn-danger btn-sm w-100">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            تسجيل الخروج
+          </a>
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <div class="admin-content">
+        <!-- Header -->
+        <header class="admin-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <button class="btn btn-outline-secondary d-lg-none me-3" id="sidebarToggle">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="mb-0 text-dark fw-bold" id="pageTitle">لوحة تحكم المدير</h2>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="me-3">
+              <span class="text-muted">
+                <i class="fas fa-user-circle me-2"></i>
+                <span id="adminName">مدير النظام</span>
+              </span>
+              <br>
+              <small class="text-success">
+                <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                متصل الآن
+              </small>
+            </div>
+          </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="p-4">
+          <!-- Dashboard Section -->
+          <section id="dashboard-section" class="content-section">
+            <div class="admin-welcome">
+              <h3 class="mb-3">
+                <i class="fas fa-hand-sparkles me-3"></i>
+                مرحباً بك في لوحة التحكم
+              </h3>
+              <p class="mb-0 opacity-90 fs-5">
+                من هنا يمكنك إدارة جميع جوانب المتجر الإلكتروني، تتبع الطلبات، إدارة المستخدمين، وإنشاء حسابات مديرين جديدة
+              </p>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-5">
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                  <i class="fas fa-shopping-cart stat-icon"></i>
+                  <div class="stat-number" id="totalOrders">0</div>
+                  <div class="stat-label">إجمالي الطلبات</div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                  <i class="fas fa-clock stat-icon"></i>
+                  <div class="stat-number" id="pendingOrders">0</div>
+                  <div class="stat-label">طلبات قيد الانتظار</div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                  <i class="fas fa-users stat-icon"></i>
+                  <div class="stat-number" id="totalUsers">0</div>
+                  <div class="stat-label">إجمالي المستخدمين</div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                  <i class="fas fa-crown stat-icon"></i>
+                  <div class="stat-number" id="totalAdmins">0</div>
+                  <div class="stat-label">المديرين</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-history me-2"></i>
+                  آخر الأنشطة
+                </h5>
+              </div>
+              <div class="card-body">
+                <div id="recentActivity">
+                  <div class="empty-state">
+                    <i class="fas fa-info-circle"></i>
+                    <h5>لا توجد أنشطة حديثة</h5>
+                    <p>ستظهر الأنشطة الأخيرة هنا عند حدوثها</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Orders Management Section -->
+          <section id="orders-section" class="content-section" style="display: none;">
+            <div class="dashboard-card">
+              <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <h5 class="mb-0">
+                  <i class="fas fa-shopping-cart me-2"></i>
+                  إدارة الطلبات
+                </h5>
+                <div class="d-flex gap-2 mt-2 mt-md-0">
+                  <select class="form-select form-select-sm" id="orderStatusFilter" style="min-width: 150px;">
+                    <option value="">جميع الطلبات</option>
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="approved">مقبولة</option>
+                    <option value="rejected">مرفوضة</option>
+                  </select>
+                  <button class="btn btn-admin btn-sm" onclick="refreshOrders()">
+                    <i class="fas fa-sync-alt me-1"></i>
+                    تحديث
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="ordersContainer">
+                  <!-- Orders will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Add Admin Section -->
+          <section id="add-admin-section" class="content-section" style="display: none;">
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h5 class="mb-0">
+                  <i class="fas fa-user-plus me-2"></i>
+                  إضافة مدير جديد
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-8">
+                    <form id="addAdminForm">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-floating">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="adminFullName"
+                              placeholder="الاسم الكامل"
+                              required
+                            />
+                            <label for="adminFullName">الاسم الكامل</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-floating">
+                            <input
+                              type="email"
+                              class="form-control"
+                              id="adminEmail"
+                              placeholder="البريد الإلكتروني"
+                              required
+                            />
+                            <label for="adminEmail">البريد الإلكتروني</label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-floating">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="adminUsername"
+                              placeholder="اسم المستخدم"
+                              required
+                            />
+                            <label for="adminUsername">اسم المستخدم</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="position-relative">
+                            <div class="form-floating">
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="adminPassword"
+                                placeholder="كلمة المرور"
+                                required
+                                readonly
+                              />
+                              <label for="adminPassword">كلمة المرور</label>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="generatePassword()">
+                              <i class="fas fa-key me-1"></i>
+                              توليد كلمة مرور جديدة
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="form-floating">
+                        <textarea
+                          class="form-control"
+                          id="adminNotes"
+                          placeholder="ملاحظات"
+                          style="height: 120px"
+                        ></textarea>
+                        <label for="adminNotes">ملاحظات إضافية (اختياري)</label>
+                      </div>
+                      
+                      <div class="d-flex gap-3 justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetAdminForm()">
+                          <i class="fas fa-times me-2"></i>
+                          إعادة تعيين
+                        </button>
+                        <button type="submit" class="btn btn-admin">
+                          <i class="fas fa-plus me-2"></i>
+                          إضافة المدير
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                  
+                  <div class="col-lg-4">
+                    <div class="alert alert-info">
+                      <h6><i class="fas fa-info-circle me-2"></i>معلومات مهمة</h6>
+                      <ul class="small mb-0">
+                        <li>سيتم توليد كلمة مرور آمنة تلقائياً</li>
+                        <li>احفظ بيانات المدير الجديد في مكان آمن</li>
+                        <li>يمكن للمدير الجديد الوصول لجميع أجزاء النظام</li>
+                        <li>تأكد من صحة البريد الإلكتروني</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Admin Credentials Display -->
+                <div id="adminCredentials" class="admin-credentials">
+                  <h5><i class="fas fa-key me-2"></i>تم إنشاء حساب المدير بنجاح!</h5>
+                  <p class="mb-3">احفظ هذه البيانات في مكان آمن:</p>
+                  
+                  <div class="credentials-item">
+                    <div>
+                      <strong>اسم المستخدم:</strong>
+                      <span id="newAdminUsername"></span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('newAdminUsername')">
+                      <i class="fas fa-copy me-1"></i>نسخ
+                    </button>
+                  </div>
+                  
+                  <div class="credentials-item">
+                    <div>
+                      <strong>كلمة المرور:</strong>
+                      <span id="newAdminPassword"></span>
+                    </div>
+                    <button class="copy-btn" onclick="copyToClipboard('newAdminPassword')">
+                      <i class="fas fa-copy me-1"></i>نسخ
+                    </button>
+                  </div>
+                  
+                  <div class="alert alert-warning mt-3 mb-0">
+                    <small>
+                      <i class="fas fa-exclamation-triangle me-2"></i>
+                      <strong>تحذير:</strong> لن تظهر هذه البيانات مرة أخرى بعد مغادرة هذه الصفحة
+                

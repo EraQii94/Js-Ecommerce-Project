@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إدارة المنتجات</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+  <h2 class="text-center mb-4">إدارة المنتجات</h2>
+
+  <!-- زر الرجوع -->
+  <div class="mb-3">
+    <a href="dashboard.html" class="btn btn-secondary">⬅ الرجوع للداشبورد</a>
+  </div>
+
+  <!-- فورم إضافة منتج -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">إضافة منتج جديد (محلي)</h5>
+      <form id="addProductForm" class="row g-3">
+        <div class="col-md-4">
+          <input type="text" id="productName" class="form-control" placeholder="اسم المنتج" required>
+        </div>
+        <div class="col-md-4">
+          <input type="number" id="productPrice" class="form-control" placeholder="السعر" required>
+        </div>
+        <div class="col-md-4">
+          <input type="text" id="productImage" class="form-control" placeholder="رابط الصورة">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-success">➕ إضافة المنتج</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- جدول عرض المنتجات -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">قائمة المنتجات</h5>
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>الصورة</th>
+            <th>الاسم</th>
+            <th>السعر</th>
+          </tr>
+        </thead>
+        <tbody id="productsTableBody">
+          <tr><td colspan="3" class="text-center">جاري تحميل المنتجات...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// 🟢 سحب المنتجات من الـ API
+async function loadProducts() {
+  try {
+    const res = await fetch("https://fakestoreapi.com/products"); // 🔄 مثال: Fake Store API
+    const products = await res.json();
+    renderProducts(products);
+  } catch (err) {
+    console.error("خطأ في جلب المنتجات:", err);
+    document.getElementById("productsTableBody").innerHTML = "<tr><td colspan='3' class='text-center text-danger'>فشل تحميل المنتجات</td></tr>";
+  }
+}
+
+// 🟢 عرض المنتجات في الجدول
+function renderProducts(products) {
+  const tbody = document.getElementById("productsTableBody");
+  tbody.innerHTML = "";
+
+  products.forEach(p => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><img src="${p.image}" alt="${p.title}" width="50"></td>
+      <td>${p.title}</td>
+      <td>${p.price} $</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// 🟢 إضافة منتج محلي للجدول
+document.getElementById("addProductForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("productName").value;
+  const price = document.getElementById("productPrice").value;
+  const image = document.getElementById("productImage").value || "https://via.placeholder.com/50";
+
+  const tbody = document.getElementById("productsTableBody");
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><img src="${image}" alt="${name}" width="50"></td>
+    <td>${name}</td>
+    <td>${price} $</td>
+  `;
+  tbody.appendChild(tr);
+
+  this.reset();
+});
+
+// تشغيل
+loadProducts();
+</script>
+
+</body>
+</html>

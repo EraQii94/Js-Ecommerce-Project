@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container mt-4">
+  <h2>إدارة الطلبات</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>رقم الطلب</th>
+        <th>اسم العميل</th>
+        <th>البريد</th>
+        <th>الإجمالي</th>
+        <th>الحالة</th>
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="ordersTable"></tbody>
+  </table>
+</div>
+
+<script>
+    function loadOrders() {
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  let table = document.getElementById("ordersTable");
+  table.innerHTML = "";
+
+  orders.forEach(order => {
+    let row = `
+      <tr>
+        <td>${order.id}</td>
+        <td>${order.customer.name}</td>
+        <td>${order.customer.email}</td>
+        <td>${order.total} $</td>
+        <td>${order.status}</td>
+        <td>
+          <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${order.id}, 'Approved')">موافقة</button>
+          <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${order.id}, 'Rejected')">رفض</button>
+        </td>
+      </tr>
+    `;
+    table.innerHTML += row;
+  });
+}
+
+function updateOrderStatus(orderId, newStatus) {
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  let index = orders.findIndex(o => o.id === orderId);
+  if (index !== -1) {
+    orders[index].status = newStatus;
+    localStorage.setItem("orders", JSON.stringify(orders));
+    loadOrders(); // تحديث الجدول
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadOrders);
+
+</script>
+</body>
+</html>
+
+

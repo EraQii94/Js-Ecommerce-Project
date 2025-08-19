@@ -95,13 +95,59 @@ function updateTotals(subtotal) {
 function wireCheckout() {
   const btn = document.getElementById("checkout-btn");
   const pay = document.getElementById("payment-section");
+
   if (btn && pay) {
     btn.addEventListener("click", () => {
       pay.style.display = "block";
       pay.scrollIntoView({ behavior: "smooth" });
+
+      // تفعيل PayPal Button
+      renderPaypalButton();
     });
   }
 }
+
+function renderPaypalButton() {
+  const subtotal = calcSubtotal();
+  const shipping = subtotal >= 100 ? 0 : (subtotal > 0 ? 10 : 0);
+  const total = subtotal + shipping;
+
+  // لو الزرار اتعمل قبل كده نمسحه ونعمل جديد
+  const container = document.getElementById("paypal-button-container");
+  container.innerHTML = "";
+
+  paypal.Buttons({
+    style: {
+      color: "blue",
+      shape: "pill",
+      label: "pay"
+    },
+    createOrder: function (data, actions) {
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: total.toFixed(2) // إجمالي الفاتورة
+          }
+        }]
+      });
+    },
+    onApprove: function (data, actions) {
+      return actions.order.capture().then(function (details) {
+        alert("تم الدفع بنجاح بواسطة " + details.payer.name.given_name);
+
+        // تفضي السلة بعد الدفع
+        setCart([]);
+        renderCart();
+      });
+    },
+    onError: function (err) {
+      console.error(err);
+      alert("حصلت مشكلة أثناء الدفع، حاول تاني.");
+    }
+  }).render("#paypal-button-container");
+}
+
+
 
 // Helper
 function escapeHtml(str) {
