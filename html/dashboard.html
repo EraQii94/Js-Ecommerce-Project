@@ -527,12 +527,7 @@
                 <span class="badge bg-warning ms-auto" id="pendingOrdersBadge">0</span>
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#add-admin" data-section="add-admin">
-                <i class="fas fa-user-plus"></i>
-                إضافة مدير
-              </a>
-            </li>
+            
             <li class="nav-item">
               <a class="nav-link" href="user.html" data-section="users">
                 <i class="fas fa-users"></i>
@@ -553,7 +548,7 @@
             <i class="fas fa-home me-2"></i>
             العودة للموقع
           </a>
-          <a href="../html/logout.html" class="btn btn-danger btn-sm w-100">
+          <a href="../html/logout.html" class="btn btn-danger btn-sm w-100" id="logoutButton">
             <i class="fas fa-sign-out-alt me-2"></i>
             تسجيل الخروج
           </a>
@@ -819,4 +814,167 @@
                     <small>
                       <i class="fas fa-exclamation-triangle me-2"></i>
                       <strong>تحذير:</strong> لن تظهر هذه البيانات مرة أخرى بعد مغادرة هذه الصفحة
-                
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Sidebar toggle for mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const adminSidebar = document.getElementById('adminSidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        
+        sidebarToggle.addEventListener('click', () => {
+          adminSidebar.classList.toggle('show');
+          mobileOverlay.classList.toggle('show');
+        });
+        
+        mobileOverlay.addEventListener('click', () => {
+          adminSidebar.classList.remove('show');
+          mobileOverlay.classList.remove('show');
+        });
+        
+        // Logout button: end session and redirect to login
+        const logoutBtn = document.getElementById('logoutButton');
+        logoutBtn?.addEventListener('click', (e) => {
+          e.preventDefault();
+          // remove current user (end session)
+          localStorage.removeItem('user');
+          // optionally remove other session-related keys if used:
+          // localStorage.removeItem('sessionToken');
+          // redirect to login page in the same folder
+          window.location.href = 'login.html';
+        });
+
+        // Initialize dashboard data
+        updateDashboardStats();
+        loadRecentActivity();
+      }); // DOMContentLoaded end
+      
+      function updateDashboardStats() {
+        // Read actual data from localStorage (fallback to empty arrays)
+        const orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const admins = JSON.parse(localStorage.getItem('admins')) || [];
+
+        // Totals
+        document.getElementById('totalOrders').innerText = orders.length;
+        document.getElementById('totalUsers').innerText = users.length;
+        document.getElementById('totalAdmins').innerText = admins.length;
+
+        // Pending orders count and badge
+        const pendingCount = orders.filter(o => (o.status || '').toString().toLowerCase() === 'pending').length;
+        document.getElementById('pendingOrders').innerText = pendingCount;
+        document.getElementById('pendingOrdersBadge').innerText = pendingCount;
+      }
+      
+      function loadRecentActivity() {
+        const recentActivityContainer = document.getElementById('recentActivity');
+        
+        // Simulated recent activity data
+        const activities = [
+          'تمت الموافقة على طلب #1234',
+          'تم إضافة مدير جديد: admin@example.com',
+          'تحديث حالة الطلب #5678 إلى "مرفوضة"',
+          'تسجيل دخول جديد من قبل مدير النظام',
+          'تغيير كلمة مرور المدير بنجاح'
+        ];
+        
+        // Clear existing content
+        recentActivityContainer.innerHTML = '';
+        
+        // Append new activities
+        activities.forEach(activity => {
+          const div = document.createElement('div');
+          div.className = 'p-3 border-bottom';
+          div.innerHTML = `<small class="text-muted">${activity}</small>`;
+          recentActivityContainer.appendChild(div);
+        });
+      }
+      
+      function refreshOrders() {
+        const statusFilter = document.getElementById('orderStatusFilter').value;
+        const ordersContainer = document.getElementById('ordersContainer');
+        
+        // Simulated order data
+        const orders = [
+          { id: 1234, user: 'محمد علي', total: 250, status: 'pending' },
+          { id: 5678, user: 'علي حسن', total: 150, status: 'approved' },
+          { id: 9101, user: 'فاطمة الزهراء', total: 300, status: 'rejected' },
+          { id: 1121, user: 'يوسف محمد', total: 200, status: 'pending' }
+        ];
+        
+        // Clear existing content
+        ordersContainer.innerHTML = '';
+        
+        // Filter and display orders
+        const filteredOrders = statusFilter ? orders.filter(order => order.status === statusFilter) : orders;
+        filteredOrders.forEach(order => {
+          const div = document.createElement('div');
+          div.className = 'order-item p-3 mb-3';
+          div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-bold">طلب #${order.id}</div>
+                <div class="text-muted">${order.user}</div>
+              </div>
+              <div>
+                <span class="badge rounded-pill ${order.status === 'pending' ? 'bg-warning' : order.status === 'approved' ? 'bg-success' : 'bg-danger'} order-status">
+                  ${order.status === 'pending' ? 'قيد الانتظار' : order.status === 'approved' ? 'مقبولة' : 'مرفوضة'}
+                </span>
+              </div>
+            </div>
+            <div class="mt-2">
+              <div class="small text-muted">إجمالي المبلغ</div>
+              <div class="fw-bold" style="font-size: 1.25rem;">${order.total} ر.س</div>
+            </div>
+          `;
+          ordersContainer.appendChild(div);
+        });
+        
+        // Update empty state visibility
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.innerHTML = `
+          <i class="fas fa-box-open" style="font-size: 3rem;"></i>
+          <h5 class="mt-3">لا توجد طلبات</h5>
+          <p>لا توجد طلبات مطابقة للمعايير المحددة.</p>
+        `;
+        ordersContainer.appendChild(filteredOrders.length === 0 ? emptyState : null);
+      }
+      
+      function resetAdminForm() {
+        document.getElementById('addAdminForm').reset();
+        document.getElementById('adminCredentials').classList.remove('show');
+      }
+      
+      function generatePassword() {
+        const passwordField = document.getElementById('adminPassword');
+        const newPassword = Math.random().toString(36).slice(-8);
+        passwordField.value = newPassword;
+        
+        // Display generated password in admin credentials section
+        document.getElementById('newAdminPassword').innerText = newPassword;
+        document.getElementById('adminCredentials').classList.add('show');
+      }
+      
+      function copyToClipboard(id) {
+        const el = document.getElementById(id);
+        const text = el.innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+          alert(`تم نسخ ${text} إلى الحافظة`);
+        }, () => {
+          alert('فشل نسخ النص، يرجى المحاولة يدوياً');
+        });
+      }
+    </script>
+  </body>
+</html>

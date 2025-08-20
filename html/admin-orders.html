@@ -1,67 +1,116 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة الطلبات</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #f8f9fa;
+    }
+    main {
+      flex: 1;
+    }
+    footer {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: auto;
+    }
+    .table thead {
+      background-color: #343a40;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-    <div class="container mt-4">
-  <h2>إدارة الطلبات</h2>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>رقم الطلب</th>
-        <th>اسم العميل</th>
-        <th>البريد</th>
-        <th>الإجمالي</th>
-        <th>الحالة</th>
-        <th>إجراءات</th>
-      </tr>
-    </thead>
-    <tbody id="ordersTable"></tbody>
-  </table>
-</div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">متجري</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">الرئيسية</a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html">عربة التسوق</a></li>
+          <li class="nav-item"><a class="nav-link active" href="orders.html">إدارة الطلبات</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<script>
+  <!-- Main Content -->
+  <main class="container mt-4">
+    <h2 class="mb-4 text-center">📦 إدارة الطلبات</h2>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered shadow-sm">
+        <thead>
+          <tr>
+            <th>رقم الطلب</th>
+            <th>اسم العميل</th>
+            <th>البريد</th>
+            <th>الإجمالي</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>جميع الحقوق محفوظة © 2025 | متجري</p>
+  </footer>
+
+  <script>
     function loadOrders() {
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
-  let table = document.getElementById("ordersTable");
-  table.innerHTML = "";
+      let orders = JSON.parse(localStorage.getItem("orders")) || [];
+      let table = document.getElementById("ordersTable");
+      table.innerHTML = "";
 
-  orders.forEach(order => {
-    let row = `
-      <tr>
-        <td>${order.id}</td>
-        <td>${order.customer.name}</td>
-        <td>${order.customer.email}</td>
-        <td>${order.total} $</td>
-        <td>${order.status}</td>
-        <td>
-          <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${order.id}, 'Approved')">موافقة</button>
-          <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${order.id}, 'Rejected')">رفض</button>
-        </td>
-      </tr>
-    `;
-    table.innerHTML += row;
-  });
-}
+      orders.forEach(order => {
+        let row = `
+          <tr>
+            <td>${order.id}</td>
+            <td>${order.customer.name}</td>
+            <td>${order.customer.email}</td>
+            <td>${order.total} $</td>
+            <td>
+              <span class="badge ${order.status === 'Approved' ? 'bg-success' : order.status === 'Rejected' ? 'bg-danger' : 'bg-secondary'}">
+                ${order.status}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-success btn-sm" onclick="updateOrderStatus(${order.id}, 'Approved')">✔ موافقة</button>
+              <button class="btn btn-danger btn-sm" onclick="updateOrderStatus(${order.id}, 'Rejected')">✖ رفض</button>
+            </td>
+          </tr>
+        `;
+        table.innerHTML += row;
+      });
+    }
 
-function updateOrderStatus(orderId, newStatus) {
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
-  let index = orders.findIndex(o => o.id === orderId);
-  if (index !== -1) {
-    orders[index].status = newStatus;
-    localStorage.setItem("orders", JSON.stringify(orders));
-    loadOrders(); // تحديث الجدول
-  }
-}
+    function updateOrderStatus(orderId, newStatus) {
+      let orders = JSON.parse(localStorage.getItem("orders")) || [];
+      let index = orders.findIndex(o => o.id === orderId);
+      if (index !== -1) {
+        orders[index].status = newStatus;
+        localStorage.setItem("orders", JSON.stringify(orders));
+        loadOrders();
+      }
+    }
 
-document.addEventListener("DOMContentLoaded", loadOrders);
-
-</script>
+    document.addEventListener("DOMContentLoaded", loadOrders);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-

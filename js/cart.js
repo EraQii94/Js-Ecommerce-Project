@@ -147,6 +147,94 @@ function renderPaypalButton() {
   }).render("#paypal-button-container");
 }
 
+function checkout() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  let sessionUser = JSON.parse(localStorage.getItem("sessionUser")) || null;
+
+  if (!sessionUser) {
+    alert("سجل الدخول أولاً.");
+    return;
+  }
+
+  if (cart.length === 0) {
+    alert("الكارت فارغ!");
+    return;
+  }
+
+  // تحميل الطلبات القديمة
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+  // إنشاء رقم طلب جديد
+  let newOrderId = Date.now(); 
+
+  // حساب الإجمالي
+  let total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  // تكوين الطلب
+  let newOrder = {
+    id: newOrderId,
+    customer: sessionUser,
+    items: cart,
+    total: total,
+    status: "قيد المراجعة"
+  };
+
+  // حفظ الطلب
+  orders.push(newOrder);
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  // إفراغ الكارت
+  localStorage.removeItem("cart");
+
+  alert("تم إرسال طلبك بنجاح! رقم الطلب: " + newOrderId);
+
+  // تحويل العميل لصفحة متابعة الطلب
+  window.location.href = "orders.html?orderId=" + newOrderId;
+}
+
+function handleCashOnDelivery() {
+  const cart = getCart();
+  if (!cart.length) {
+    alert("السلة فارغة!");
+    return;
+  }
+
+  // بيانات العميل (مؤقتًا ثابتة، ممكن ناخدها من الفورم أو تسجيل الدخول)
+  const customer = {
+    name: localStorage.getItem("userName") || "عميل تجريبي",
+    email: localStorage.getItem("userEmail") || "customer@example.com"
+  };
+
+  // حساب الإجمالي
+  const subtotal = calcSubtotal();
+  const shipping = subtotal >= 100 ? 0 : (subtotal > 0 ? 10 : 0);
+  const total = subtotal + shipping;
+
+  // إنشاء الأوردر
+  const newOrder = {
+    id: Date.now(),
+    customer,
+    items: cart,
+    total,
+    status: "قيد الانتظار"
+  };
+
+  // حفظ الأوردر في localStorage
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  orders.push(newOrder);
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  // تفريغ السلة
+  localStorage.removeItem("cart");
+  renderCart();
+
+  alert("تم تسجيل الطلب بنجاح! رقم الطلب: " + newOrder.id);
+  window.location.href = "orders.html"; // صفحة متابعة الطلب للمستخدم
+}
+
+
+
 
 
 // Helper

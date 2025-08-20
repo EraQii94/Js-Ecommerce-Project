@@ -18,14 +18,17 @@
 
   <!-- فورم إضافة أدمن -->
   <form id="addAdminForm" class="row g-3 mb-4">
-    <div class="col-md-5">
-      <input type="text" id="adminName" class="form-control" placeholder="اسم الأدمن" required>
+    <div class="col-md-4">
+      <input type="text" id="adminName" class="form-control" placeholder="اسم الأدمن" required minlength="4">
     </div>
-    <div class="col-md-5">
+    <div class="col-md-4">
       <input type="email" id="adminEmail" class="form-control" placeholder="الإيميل" required>
     </div>
-    <div class="col-md-2">
-      <button type="submit" class="btn btn-primary w-100">➕ إضافة أدمن جديد</button>
+    <div class="col-md-3">
+      <input type="password" id="adminPassword" class="form-control" placeholder="كلمة المرور" required>
+    </div>
+    <div class="col-md-1">
+      <button type="submit" class="btn btn-primary w-100">➕</button>
     </div>
   </form>
 
@@ -35,6 +38,7 @@
       <tr>
         <th>الاسم</th>
         <th>الإيميل</th>
+        <th>هل يوجد كلمة مرور</th>
         <th>الإجراءات</th>
       </tr>
     </thead>
@@ -46,7 +50,7 @@
   // استرجاع الإدمنز من localStorage
   function getAdmins() {
     return JSON.parse(localStorage.getItem("admins")) || [
-      { name: "Default Admin", email: "admin@example.com" }
+      { name: "Default Admin", email: "admin@example.com", password: "admin123" }
     ];
   }
 
@@ -62,12 +66,15 @@
     tbody.innerHTML = "";
 
     admins.forEach((admin, index) => {
+      const hasPassword = admin.password ? "نعم" : "لا";
       tbody.innerHTML += `
         <tr>
-          <td>${admin.name}</td>
-          <td>${admin.email}</td>
+          <td>${escapeHtml(admin.name)}</td>
+          <td>${escapeHtml(admin.email)}</td>
+          <td class="text-center">${hasPassword}</td>
           <td>
             <button class="btn btn-sm btn-warning" onclick="editAdmin(${index})">✏️ تعديل</button>
+            <button class="btn btn-sm btn-secondary" onclick="changePassword(${index})">🔒 تغيير كلمة المرور</button>
             <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${index})">🗑️ حذف</button>
           </td>
         </tr>
@@ -79,30 +86,68 @@
   document.getElementById("addAdminForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
-    const name = document.getElementById("adminName").value;
-    const email = document.getElementById("adminEmail").value;
+    const name = document.getElementById("adminName").value.trim();
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+
+    if (!name || !email || !password) {
+      alert("الرجاء تعبئة الاسم والإيميل وكلمة المرور");
+      return;
+    }
+
+    if (name.length < 4) {
+      alert("اسم الأدمن يجب أن يكون 4 أحرف على الأقل.");
+      return;
+    }
 
     const admins = getAdmins();
-    admins.push({ name, email });
+    admins.push({ name, email, password });
     saveAdmins(admins);
     renderAdmins();
 
     e.target.reset();
   });
 
-  // تعديل بيانات الأدمن
+  // تعديل بيانات الأدمن (لا يغير كلمة المرور هنا)
   function editAdmin(index) {
     const admins = getAdmins();
     const admin = admins[index];
 
-    const newName = prompt("ادخل الاسم الجديد:", admin.name);
-    const newEmail = prompt("ادخل الإيميل الجديد:", admin.email);
+    const newName = prompt("ادخل الاسم الجديد (4 أحرف على الأقل):", admin.name);
+    if (newName === null) return; // cancelled
 
-    if (newName && newEmail) {
-      admins[index] = { name: newName, email: newEmail };
+    const trimmedName = newName.trim();
+    if (trimmedName.length < 4) {
+      alert("اسم الأدمن يجب أن يكون 4 أحرف على الأقل.");
+      return;
+    }
+
+    const newEmail = prompt("ادخل الإيميل الجديد:", admin.email);
+    if (newEmail === null) return; // cancelled
+
+    if (trimmedName && newEmail) {
+      admins[index] = { ...admin, name: trimmedName, email: newEmail.trim() };
       saveAdmins(admins);
       renderAdmins();
     }
+  }
+
+  // تغيير كلمة المرور للأدمن
+  function changePassword(index) {
+    const admins = getAdmins();
+    const newPassword = prompt("ادخل كلمة المرور الجديدة (اتركها فارغة لإلغاء):", "");
+
+    if (newPassword === null) return; // user cancelled
+    // allow empty to remove password? keep requirement: demand non-empty
+    if (newPassword.trim() === "") {
+      alert("كلمة المرور لا يمكن أن تكون فارغة.");
+      return;
+    }
+
+    admins[index].password = newPassword;
+    saveAdmins(admins);
+    renderAdmins();
+    alert("تم تغيير كلمة المرور.");
   }
 
   // حذف الأدمن
@@ -113,6 +158,17 @@
       saveAdmins(admins);
       renderAdmins();
     }
+  }
+
+  // مساعدة لتفادي XSS عند عرض النصوص
+  function escapeHtml(text) {
+    if (!text) return "";
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   // أول ما الصفحة تفتح
